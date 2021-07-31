@@ -19,15 +19,47 @@ module Pod
       # 
       LINKED_DB = File.expand_path('~/.cocoapods/plugins/link/linked.json')
 
+      # return the path which has '*.podspec'
+      def self.registerProjectPath
+        spec = Dir["#{Dir.pwd}/*.podspec"]
+        unless spec.empty?
+          return Dir.pwd
+        end
+
+        # check parent directory
+        spec = Dir["#{Dir.pwd}/../*.podspec"]
+        unless spec.empty?
+          return File.expand_path("..", Dir.pwd)
+        end
+
+        help! 'A .podspec must exist in the directory `pod link` is ran'
+      end
+
+      # return the path which contains 'Podfile'
+      def self.linkProjectPath
+        spec = Dir["#{Dir.pwd}/Podfile"]
+        unless spec.empty?
+          return Dir.pwd
+        end
+
+        # check ./Example directory
+        spec = Dir["#{Dir.pwd}/Example/Podfile"]
+        unless spec.empty?
+          return File.expand_path("Example", Dir.pwd)
+        end
+
+        help! 'Podfile must exist in the directory `pod link` is ran'
+      end
+
       #
       # Register a pod for local development in the current working directory. This working
       # directory must have a .podspec defining the pod 
       # 
       def self.register
-        self.print "Registering '#{self.podspec.name}' > #{Dir.pwd}"
+        self.print "Registering '#{self.podspec.name}' > #{self.registerProjectPath}"
         self.write_db(REGISTERED_DB, self.registerd_db, {
           self.podspec.name => {
-            "path" => Dir.pwd
+            "path" => self.registerProjectPath
           }
         })
       end
@@ -36,7 +68,7 @@ module Pod
       # Unregister a pod
       # 
       def self.unregister
-       self.print "Unregistering '#{self.podspec.name}' > #{Dir.pwd}"
+       self.print "Unregistering '#{self.podspec.name}' > #{self.registerProjectPath}"
         db = self.registerd_db
         db.delete(self.podspec.name)
         self.write_db(REGISTERED_DB, db)
@@ -49,6 +81,7 @@ module Pod
       # @param pod the name of the pod to link into the current project 
       # 
       def self.link(pod)
+        podfileFolder = self.linkProjectPath
         # only allow registered links to be used
         registered_link = self.get_registered_link pod
         if registered_link.nil?
@@ -57,19 +90,19 @@ module Pod
 
         # add the linked pod
         linked_pods = [pod]
-        if self.linked_db.has_key?(Dir.pwd)
-          linked_pods = linked_pods.concat self.linked_db[Dir.pwd]['pods']
+        if self.linked_db.has_key?(podfileFolder)
+          linked_pods = linked_pods.concat self.linked_db[podfileFolder]['pods']
         end
 
         self.print "Adding link to '#{pod}' > #{registered_link['path']}"
         self.write_db(LINKED_DB, self.linked_db, {
-          Dir.pwd => {
+          podfileFolder => {
             'pods' => linked_pods.uniq
           }
         })
 
         # install pod from link
-        Pod::Command::Install.run(CLAide::ARGV.new ["--no-repo-update"])
+        Pod::Command::Install.run(["--project-directory=#{podfileFolder}"])
       end
 
       #
@@ -78,8 +111,9 @@ module Pod
       # @param pod the name of the pod to unlink
       # 
       def self.unlink(pod)
-        if self.linked_db.has_key?(Dir.pwd)
-          linked_pods = self.linked_db[Dir.pwd]['pods']
+        podfileFolder = self.linkProjectPath
+        if self.linked_db.has_key?(podfileFolder)
+          linked_pods = self.linked_db[podfileFolder]['pods']
           linked_pods.delete(pod)
 
           #
@@ -90,18 +124,18 @@ module Pod
           self.print "Removing link to '#{pod}'"
           if linked_pods.empty?
             db = self.linked_db
-            db.delete(Dir.pwd)
+            db.delete(podfileFolder)
             self.write_db(LINKED_DB, db)
           else
             self.write_db(LINKED_DB, self.linked_db, {
-              Dir.pwd => {
+              podfileFolder => {
                 'pods' => linked_pods
               }
             })
           end
 
           # install pod from repo
-          Pod::Command::Install.run(CLAide::ARGV.new [])
+          Pod::Command::Install.run(["--project-directory=#{podfileFolder}"])
         end
       end
 
@@ -215,8 +249,9 @@ module Pod
       # @returns a list of pods that are linked for the current project
       # 
       def self.linked_pods
-        if self.linked_db.has_key?(Dir.pwd)
-          return self.linked_db[Dir.pwd]['pods']
+        podfileFolder = self.linkProjectPath
+        if self.linked_db.has_key?(podfileFolder)
+          return self.linked_db[podfileFolder]['pods']
         end
         return []
       end
@@ -227,7 +262,7 @@ module Pod
       # @returns the podspec
       # 
       def self.podspec
-        spec = Dir["#{Dir.pwd}/*.podspec"]
+        spec = Dir["#{self.registerProjectPath}/*.podspec"]
         if spec.empty?
           help! 'A .podspec must exist in the directory `pod link` is ran'
         end
