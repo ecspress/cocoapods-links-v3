@@ -1,0 +1,2 @@
+gem build ./cocoapods_links.gemspec
+gem install --local ./cocoapods-links-v2-0.4.0.gem

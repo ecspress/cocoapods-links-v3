@@ -5,7 +5,7 @@ A CocoaPods plugin to manage local development pods
 ## Installation
 
 ```bash
-gem install cocoapods-links
+gem install cocoapods-links-v2
 ```
 
 ## Purpose

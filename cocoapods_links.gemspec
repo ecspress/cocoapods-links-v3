@@ -4,22 +4,22 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'cocoapods_links.rb'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'cocoapods-links'
+  spec.name          = 'cocoapods-links-v2'
   spec.version       = CocoapodsLinks::VERSION
-  spec.authors       = ['Mike Owens']
-  spec.email         = ['mike.owens11@gmail.com']
+  spec.authors       = ['Hai Feng Kao']
+  spec.email         = ['haifeng@cocoaspice.in']
   spec.summary       = 'A CocoaPods plugin for linking and unlinking local pods for local development'
   spec.description   = <<-DESC
                          This CocoaPods plugin linking functionality allows to easily test their pods.
 
-                         This plugin adds the following commands to the CococPods command line:
+                         This plugin adds the following commands to the CocoaPods command line:
 
                           * pod link <name>
                           * pod unlink <name>
                           * pod list links
 
                        DESC
-  spec.homepage      = 'https://github.com/mowens/cocoapods-links'
+  spec.homepage      = 'https://github.com/haifengkao/cocoapods-links-v2'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files`.split($/)
