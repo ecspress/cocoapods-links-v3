@@ -1,5 +1,3 @@
-require 'pod/links'
-
 module Pod
   class Command
     class List < Command
@@ -14,7 +12,7 @@ module Pod
         [
           ['--registered', 'List registered pods'],
           ['--linked', 'List linked pods'],
-          ['--local', 'List local settings'],
+          ['--local', 'List local pods only'],
         ]
       end
 

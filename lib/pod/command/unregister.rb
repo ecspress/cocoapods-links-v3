@@ -1,15 +1,11 @@
-require 'pod/links'
-
 module Pod
   class Command
     class Unregister < Command
-      self.summary = 'Register pod links for local pod development'
+      self.summary = 'Unregister development pod'
       self.description = <<-DESC
-        Using 'pod register' in a project folder will create a global link.
-        Then, in some other pod, 'pod link <name>' will create a link to 
-        the registered pod as a Development pod.
+        Using 'pod unregister' in a project folder will remove global links to development pods.
       DESC
-
+      
       self.arguments = []
 
       def self.options

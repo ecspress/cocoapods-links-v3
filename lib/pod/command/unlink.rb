@@ -1,19 +1,10 @@
-require 'pod/links'
-
 module Pod
   class Command
     class Unlink < Command
       self.summary = 'Remove pod links'
       self.description = <<-DESC
-        The unlink functionality allows developers to remove reference to their local pods
-        when they are finished testing
-
-        Using 'pod unlink' in a project folder will remove the global link.
-        
-        Using 'pod unlink <name>' will remove the link to the <name> developement pod
-        and install the <name> pod configured in the Podfile
-
-        This allows to easily remove developement pod references
+        Using 'pod unlink <POD_NAME>' in a project folder will remove a link to 
+        registered pod. You can also use .podlinks file to denote pods to link.
       DESC
 
       self.arguments = [

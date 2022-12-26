@@ -26,7 +26,7 @@ module Pod
       def self.register
         specs = self.podspecs
         currentDir = Dir.pwd
-        help! 'A .podspec must exist in the directory `pod register` is ran' if specs.empty?
+        Register::help! 'A .podspec must exist in the directory `pod register` is ran' if specs.empty?
         specs.each do |spec|
           self.print "Registering '#{spec.name}' > #{currentDir}"
           self.write_db(REGISTERED_DB, self.registerd_db, {
@@ -43,7 +43,7 @@ module Pod
       def self.unregister
         specs = self.podspecs
         currentDir = Dir.pwd
-        help! 'A .podspec must exist in the directory `pod unregister` is ran' if specs.empty?
+        Unregister::help! 'A .podspec must exist in the directory `pod unregister` is ran' if specs.empty?
         specs.each do |spec|
           self.print "Unregistering '#{spec.name}' > #{currentDir}"
           db = self.registerd_db
@@ -81,7 +81,7 @@ module Pod
           # only allow registered links to be used
           registered_link = self.get_registered_link pod
           if registered_link.nil?
-            Command::help! "Pod '#{pod}'' is not registered. Did you run `pod link` from the #{pod} directory?"
+            Link::help! "Pod '#{pod}' is not registered. Did you run `pod register` from the '#{pod}' pod directory?"
           end
 
           # add the linked pod
@@ -134,6 +134,8 @@ module Pod
 
           # install pod from repo
           Pod::Command::Install.run(["--project-directory=#{currentDir}"])
+        else
+          self.print "No development pods are currently linked!"
         end
       end
 
