@@ -20,25 +20,32 @@ module Pod
         CLAide::Argument.new('POD_NAME', false)
       ]
 
+      def self.options
+        []
+      end
+
       def initialize(argv)
-        @pod = argv.shift_argument()
+        @pods = argv.arguments!
         super
       end
 
       #
-      # if no pod is given from the command line then we will unregister the pod from the
-      # registered links
+      # if no pod is given from the command line then we will look for the .podlinks file
       #
-      # if a pod name is given from the command line then we will unlink the given pod from
-      # the project
-      #
-      def run 
-        unless @pod.nil?
-          Pod::Command::Links.unlink @pod
-        else
-          Pod::Command::Links.unregister
+      # if no pods names are available to unlink, show help
+      # 
+      def validate!
+        super
+        if @pods.empty?
+          @pods = Pod::Command::Links.podsFromLinkFile
         end
+        help! "specify pods to unlink by running `pod unlink podname` or use .podlinks file" unless !@pods.empty?
       end
+      
+      def run 
+        Pod::Command::Links.unlink @pods
+      end
+
     end
   end
 end

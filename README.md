@@ -1,11 +1,11 @@
 # cocoapods-links
 
-A CocoaPods plugin to manage local development pods. I fixed some errors from [the original gem](mowens/cocoapods-links)
+A CocoaPods plugin to manage local development pods. Added multiple spec support from [fork](haifengkao/cocoapods-links-v2)  which is forked from from [the original gem](mowens/cocoapods-links)
 
 ## Installation
 
 ```bash
-gem install cocoapods-links-v2
+gem install cocoapods-links-v3
 ```
 
 ## Purpose

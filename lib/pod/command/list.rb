@@ -2,27 +2,39 @@ require 'pod/links'
 
 module Pod
   class Command
-    class List
-      class Links < List
+    class List < Command
+      self.summary = 'Lists registered and linked pods'
+      self.description = <<-DESC
+        List the registered and linked pods
+      DESC
 
-        self.summary = 'List links'
-        self.description = <<-DESC
-          List the registered links
-        DESC
+      self.arguments = []
 
-        def self.options
-          [[
-            '--linked', 'List pods linked in the current project'
-          ]].concat(super)
-        end
+      def self.options
+        [
+          ['--registered', 'List registered pods'],
+          ['--linked', 'List linked pods'],
+          ['--local', 'List local settings'],
+        ]
+      end
 
-        def initialize(argv)
-          @linked = argv.flag?('linked')
-          super
-        end
+      def initialize(argv)
+        @showRegistered = argv.flag?('registered')
+        @showLinked = argv.flag?('linked')
+        @local = argv.flag?('local')
+        super
+      end
 
-        def run
-          Pod::Command::Links.list @linked
+      def validate!
+        super
+        help! "specify option to list by using --registered or --linked" unless (@showRegistered || @showLinked)
+      end
+
+      def run
+        if @showRegistered
+          Pod::Command::Links.list_registered @local
+        else
+          Pod::Command::Links.list_linked @local
         end
       end
     end
